@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linea de Vida — Gaia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a1a;
+    --bg-card: #111128;
+    --bg-card-hover: #1a1a3e;
+    --positive: #4ecca3;
+    --negative: #e84545;
+    --mixed: #f0a500;
+    --accent: #7b68ee;
+    --text: #e8e8f0;
+    --text-muted: #7a7a9a;
+    --text-dim: #4a4a6a;
+    --line: #2a2a4a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(123,104,238,0.08) 0%, transparent 70%);
+    top: -200px; right: -100px;
+    pointer-events: none;
+  }
+
+  .hero-line {
+    width: 1px; height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--accent));
+    margin-bottom: 40px;
+    animation: grow-down 1.5s ease-out;
+  }
+
+  @keyframes grow-down {
+    from { height: 0; opacity: 0; }
+    to { height: 120px; opacity: 1; }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text);
+    animation: fade-up 1s ease-out 0.5s both;
+  }
+
+  .hero .subtitle {
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    animation: fade-up 1s ease-out 0.8s both;
+  }
+
+  .hero .meta {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 24px;
+    text-align: center;
+    line-height: 1.8;
+    animation: fade-up 1s ease-out 1.1s both;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
+  }
+
+  .scroll-hint .arrow { font-size: 1.2rem; }
+
+  @keyframes fade-up {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ─── SECTION ─── */
+  .section {
+    padding: 80px 0 40px;
+    position: relative;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-header .age-range {
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* ─── TIMELINE ─── */
+  .timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--line) 10%, var(--line) 90%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .event {
+    position: relative;
+    width: 45%;
+    padding: 20px;
+    margin-bottom: 32px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    transition: all 0.3s ease;
+    cursor: default;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .event.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .event:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(123,104,238,0.1);
+  }
+
+  .event.left { margin-left: 0; margin-right: auto; }
+  .event.right { margin-left: auto; margin-right: 0; }
+
+  /* Connector dot on timeline */
+  .event::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    top: 28px;
+    border: 2px solid var(--bg);
+  }
+
+  .event.left::after { right: -7px; transform: translateX(50%); right: calc(-45% - 50% + 43%); }
+  .event.right::after { left: -7px; transform: translateX(-50%); left: calc(-45% - 50% + 43%); }
+
+  /* Simplify connector positioning */
+  .event.left::after { right: -36px; }
+  .event.right::after { left: -36px; }
+
+  .event.positive::after { background: var(--positive); }
+  .event.negative::after { background: var(--negative); }
+  .event.mixed::after { background: var(--mixed); }
+
+  .event .age-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .event.positive .age-badge { background: rgba(78,204,163,0.15); color: var(--positive); }
+  .event.negative .age-badge { background: rgba(232,69,69,0.15); color: var(--negative); }
+  .event.mixed .age-badge { background: rgba(240,165,0,0.15); color: var(--mixed); }
+
+  .event h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .event.positive h3 { color: var(--positive); }
+  .event.negative h3 { color: var(--negative); }
+  .event.mixed h3 { color: var(--mixed); }
+
+  .event p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .intensity-bar {
+    margin-top: 10px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .intensity-bar .fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease-out 0.5s;
+  }
+
+  .event.positive .intensity-bar .fill { background: var(--positive); }
+  .event.negative .intensity-bar .fill { background: var(--negative); }
+  .event.mixed .intensity-bar .fill { background: var(--mixed); }
+
+  /* ─── PATTERNS ─── */
+  .patterns {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  .patterns h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .pattern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .pattern-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .pattern-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+
+  .pattern-card.neg::before { background: var(--negative); }
+  .pattern-card.pos::before { background: var(--positive); }
+  .pattern-card.mix::before { background: var(--mixed); }
+
+  .pattern-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .pattern-card.neg h3 { color: var(--negative); }
+  .pattern-card.pos h3 { color: var(--positive); }
+  .pattern-card.mix h3 { color: var(--mixed); }
+
+  .pattern-card p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ─── ALCOHOL SECTION ─── */
+  .alcohol-timeline {
+    max-width: 600px;
+    margin: 0 auto 60px;
+    padding: 0 24px;
+  }
+
+  .alcohol-timeline h3 {
+    color: var(--mixed);
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 1.2rem;
+  }
+
+  .alcohol-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .alcohol-item::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 8px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--mixed);
+  }
+
+  .alcohol-item::after {
+    content: '';
+    position: absolute;
+    left: 10px; top: 22px; bottom: -16px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .alcohol-item:last-child::after { display: none; }
+
+  .alcohol-item .period {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--mixed);
+    min-width: 60px;
+  }
+
+  .alcohol-item .desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    border-top: 1px solid var(--line);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* ─── FILTER BUTTONS ─── */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    padding: 0 24px;
+  }
+
+  .filter-btn {
+    padding: 8px 20px;
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.05em;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(123,104,238,0.1);
+  }
+
+  .filter-btn.active.all { border-color: var(--accent); }
+  .filter-btn.active.pos { border-color: var(--positive); color: var(--positive); background: rgba(78,204,163,0.1); }
+  .filter-btn.active.neg { border-color: var(--negative); color: var(--negative); background: rgba(232,69,69,0.1); }
+  .filter-btn.active.mix { border-color: var(--mixed); color: var(--mixed); background: rgba(240,165,0,0.1); }
+
+  .event.filtered-out {
+    opacity: 0.1 !important;
+    transform: scale(0.95) !important;
+    pointer-events: none;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .timeline::before { left: 20px; }
+    .event { width: calc(100% - 50px); margin-left: 50px !important; margin-right: 0 !important; }
+    .event.left::after, .event.right::after { left: -36px !important; right: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-line"></div>
+  <h1>Linea de Vida</h1>
+  <div class="subtitle">Gaia &middot; 1994 &ndash; 2026</div>
+  <div class="meta">
+    Ejercicio terapeutico para sesion con Ivan<br>
+    Basado en la tecnica Lifeline de TCC y Terapia Narrativa de Exposicion
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll para explorar</span>
+    <span class="arrow">&darr;</span>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active all" onclick="filterEvents('all')">Todos</button>
+  <button class="filter-btn pos" onclick="filterEvents('positive')">+ Positivos</button>
+  <button class="filter-btn neg" onclick="filterEvents('negative')">- Negativos</button>
+  <button class="filter-btn mix" onclick="filterEvents('mixed')">~ Mixtos</button>
+</div>
+
+<!-- INFANCIA -->
+<div class="section">
+  <div class="section-header">
+    <h2>Infancia</h2>
+    <div class="age-range">0 &ndash; 12 anos</div>
+  </div>
+  <div class="timeline" id="timeline-infancia">
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">0-8 anos</span>
+      <h3>Familia unida</h3>
+      <p>Papas con roles invertidos: papa cocinando, trapeando, haciendo peinados horribles. Mama trabajando, llegando tarde con regalos. Una familia poco usual para el contexto y eso te encantaba.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">0-8 anos</span>
+      <h3>Abrazos al llegar</h3>
+      <p>Correr a abrazar a tus papas cuando llegaban del trabajo. Uno de los recuerdos mas felices.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">Infancia</span>
+      <h3>Montar bicicleta</h3>
+      <p>Algo que amabas y aun amas, aunque ya no lo haces a los 31.</p>
+      <div class="intensity-bar"><div class="fill" style="width:70%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">~8 anos</span>
+      <h3>Discusion en la calle</h3>
+      <p>Tus papas halandote de cada brazo en medio de la calle, de noche, en una fiesta. Te obligaron a elegir. Elegiste a tu mama. Sentiste que defraudaste a tu papa.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">~8 anos</span>
+      <h3>Separacion de tus papas</h3>
+      <p>El momento mas incomprensible de tu vida. No entendias nada y no lo querias entender. Lo unico que hiciste fue evadir para no sentir.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">8+</span>
+      <h3>Depresion de mama</h3>
+      <p>Mariela internada, con medicacion, no comia, ciclos de dormir mucho o nada. Tu mama "se habia ido". Mudanzas constantes entre ella y tu.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">8 anos</span>
+      <h3>Responsable a los 8</h3>
+      <p>Te sentiste responsable de la salud mental de tu mama. Lo intentaste mucho pero no tenias las herramientas. Te alejaste de ella.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right mixed" data-type="mixed">
+      <span class="age-badge">~8-9 anos</span>
+      <h3>Vivir con papa</h3>
+      <p>Alivio inmediato por no ver a mama asi. Pero culpa que aparecio despues (a los 16 y hasta hoy). Tu mama te lo reclama a veces. Tu papa te enseno a evadir.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">Pre-12</span>
+      <h3>Mejor estudiante</h3>
+      <p>Menciones, medallas, primer puesto en torneo de ajedrez. Demasiado inteligente y juiciosa. Mucha aceptacion vinculada al rendimiento.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">~12 anos</span>
+      <h3>Inicio del consumo</h3>
+      <p>Inicio de consumo de drogas. Todo lo academico y social se derrumbo. Expulsiones de colegios, echadas de casa. Todo estaba mal.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADOLESCENCIA -->
+<div class="section">
+  <div class="section-header">
+    <h2>Adolescencia</h2>
+    <div class="age-range">12 &ndash; 21 anos</div>
+  </div>
+  <div class="timeline" id="timeline-adolescencia">
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">13-19 anos</span>
+      <h3>Periodo borroso</h3>
+      <p>Mucho consumo, evasion, arte, musica, salir, promiscuidad. Pocos recuerdos claros. Rehabilitacion por periodos: consumias justo antes de ir a las pruebas de sustancias y no te importaba.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">12-21 anos</span>
+      <h3>Periodo de consumo</h3>
+      <p>Discusiones, terapias, centros de rehabilitacion, echadas de casa. Tus papas intentando todo. Tu solo callabas, mente en blanco, quedabas paralizada. No decias nada.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">12-21 anos</span>
+      <h3>Sin vinculos estables</h3>
+      <p>Sin amigos fijos. Pasabas de personas, grupos. Salias con muchas mujeres. Nada estable en tu vida.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="event right mixed" data-type="mixed">
+      <span class="age-badge">~15 anos</span>
+      <h3>Tu abuela te recibe</h3>
+      <p>Tu abuela paterna fue la unica que te recibio cuando todos te habian echado. Te sentiste horrible, sabias que habias perdido todo y era tu ultima oportunidad. Le prometiste que ibas a cambiar. No querias defraudarla a ella.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">~15 anos</span>
+      <h3>"No te mereces la U"</h3>
+      <p>Querias entrar a la universidad. Tus papas dijeron que no te lo merecias, que te pagaban una tecnologia mas corta y economica.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right mixed" data-type="mixed">
+      <span class="age-badge">15-18 anos</span>
+      <h3>Tecnologia</h3>
+      <p>Te fue mal academicamente pero aprendias y lo disfrutabas. Seguias consumiendo. Comenzaste a cambiar y reparar vinculos.</p>
+      <div class="intensity-bar"><div class="fill" style="width:60%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">~18-19 anos</span>
+      <h3>"Si te mereces la U"</h3>
+      <p>Tus papas dijeron que te lo merecias. La carta de admision llego y lloraste en un bus camino a Santa Elena.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">18-21 anos</span>
+      <h3>Universidad</h3>
+      <p>Volviste a ser buena estudiante. Consumo muy reducido. Todo comenzo a cambiar.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">~20-21 anos</span>
+      <h3>Sara — primera relacion</h3>
+      <p>Primera relacion amorosa. Aprendiste a vincularte, a expresar, a no ser callada siempre.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">~20-21 anos</span>
+      <h3>Psicoanalisis</h3>
+      <p>Entendiste que no habias procesado la separacion de tus papas. Un momento de revelacion importante.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">~21 anos</span>
+      <h3>Dejar las drogas</h3>
+      <p>Un dia dijiste "no mas" y asi fue. Tenias herramientas acumuladas de rehabilitacion. Te alejaste del grupo de consumo sin que doliera. Sara estaba ahi.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">~21 anos</span>
+      <h3>Grupo de amigos</h3>
+      <p>Conexion inmediata. Mejores amigos hasta hoy. Los amas.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADULTEZ TEMPRANA -->
+<div class="section">
+  <div class="section-header">
+    <h2>Adultez Temprana</h2>
+    <div class="age-range">21 &ndash; 29 anos</div>
+  </div>
+  <div class="timeline" id="timeline-adultez-temprana">
+
+    <div class="event left mixed" data-type="mixed">
+      <span class="age-badge">~21-22 anos</span>
+      <h3>Infidelidad de Sara</h3>
+      <p>Te fue infiel con un sacerdote. Pensaste "asi es la humanidad". Casi no sentiste. Tristeza por la ausencia mas que por la traicion.</p>
+      <div class="intensity-bar"><div class="fill" style="width:60%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">~22 anos</span>
+      <h3>Terminar la U</h3>
+      <p>Ni la mejor ni la peor. Cerraste ciclo.</p>
+      <div class="intensity-bar"><div class="fill" style="width:50%"></div></div>
+    </div>
+
+    <div class="event left mixed" data-type="mixed">
+      <span class="age-badge">~23-24 anos</span>
+      <h3>Emprendimiento + Pandemia</h3>
+      <p>Montaste un negocio. Llego la pandemia y toco cerrar.</p>
+      <div class="intensity-bar"><div class="fill" style="width:70%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">25-29 anos (2020+)</span>
+      <h3>Renacer en pandemia</h3>
+      <p>Gran encuentro contigo misma. Ejercicio, alimentacion, dormir bien, musica, instrumentos, diseno. La mejor version que has conocido de ti. Comenzaste a ser quien querias ser.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">2020-2024</span>
+      <h3>Mistik con tu tia</h3>
+      <p>Negocio de ropa. Te sentias increible.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">25-29 anos</span>
+      <h3>Vinculos sanados</h3>
+      <p>Vinculos familiares sanados y cercanos. "La sobrina favorita". Todo mejor que nunca.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">2020 (26 anos)</span>
+      <h3>Conocer a Lu</h3>
+      <p>No te habias dado cuenta de lo enamorada que estabas. Seguias evadiendo lo romantico.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">2020-2024</span>
+      <h3>Dificultad con Lu</h3>
+      <p>Prima en contra, mama en contra, papas de Lu no aceptaban. No sabias comunicar. Le hiciste mucho dano. Idas y venidas, irte sin decir nada.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">26+ anos</span>
+      <h3>Episodio con Camila</h3>
+      <p>Le dijiste a Lu que se fuera. Ella se fue llorando. Te acostaste con Camila estando ebria. Culpa enorme que sigue hasta hoy.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">21-26 anos</span>
+      <h3>Patron de promiscuidad</h3>
+      <p>Irresponsabilidad afectiva con las mujeres con las que saliste. No eras responsable con los vinculos romanticos. Siempre estando muy ebria.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADULTEZ ACTUAL -->
+<div class="section">
+  <div class="section-header">
+    <h2>Adultez Actual</h2>
+    <div class="age-range">29 &ndash; 31 anos</div>
+  </div>
+  <div class="timeline" id="timeline-adultez-actual">
+
+    <div class="event left negative" data-type="negative">
+      <span class="age-badge">Inicios 2024 (29 anos)</span>
+      <h3>Buscaste a Lu</h3>
+      <p>Decidida a tener una relacion real. Ya estabas dispuesta, con mas bases. Pero ella ya no quiso. La entendiste completamente.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">Junio 2024 (30 anos)</span>
+      <h3>Lu volvio</h3>
+      <p>"Sigo firme con vos". Comenzo la relacion formal. Casi 2 anos estable.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event left positive" data-type="positive">
+      <span class="age-badge">2024-hoy</span>
+      <h3>Relacion con Lu</h3>
+      <p>Has aprendido a vincularte. Estas enamorada. Quieres construir una vida con ella. Nunca habias sentido esto ni estos deseos.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right negative" data-type="negative">
+      <span class="age-badge">2024</span>
+      <h3>Cierre de Mistik</h3>
+      <p>Tu socia cerro la empresa de repente. Te quedaste sin ingresos.</p>
+      <div class="intensity-bar"><div class="fill" style="width:80%"></div></div>
+    </div>
+
+    <div class="event left mixed" data-type="mixed">
+      <span class="age-badge">2024</span>
+      <h3>Busqueda de empleo</h3>
+      <p>6 meses buscando trabajo en empresa por primera vez. Frustrante pero lo lograste.</p>
+      <div class="intensity-bar"><div class="fill" style="width:70%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">2024-2025</span>
+      <h3>Stay Group</h3>
+      <p>Primer empleo en empresa. Llevas 1 ano, eres feliz, te subieron el sueldo por ser buena.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="event left mixed" data-type="mixed">
+      <span class="age-badge">Enero 2026</span>
+      <h3>Muerte de tu abuela paterna</h3>
+      <p>Cuando estaba agonizando le diste las gracias. Le dijiste que despues de eso eres otra persona y que estaria orgullosa de ti. Hace 2 meses.</p>
+      <div class="intensity-bar"><div class="fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="event right positive" data-type="positive">
+      <span class="age-badge">Hoy — 31 anos</span>
+      <h3>Suenos a futuro</h3>
+      <p>Ingenieria de software, vida con Lu, carrera hibrida diseno + dev, muchos suenos. Estas aqui.</p>
+      <div class="intensity-bar"><div class="fill" style="width:90%"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ALCOHOL PATTERN -->
+<div class="patterns">
+  <div class="alcohol-timeline">
+    <h3>Tema Recurrente: Alcohol</h3>
+    <div class="alcohol-item">
+      <span class="period">12-21</span>
+      <span class="desc">Consumo de drogas y alcohol durante toda la adolescencia</span>
+    </div>
+    <div class="alcohol-item">
+      <span class="period">21-24</span>
+      <span class="desc">Dejo las drogas pero continuo alcohol "social tirando a mucho"</span>
+    </div>
+    <div class="alcohol-item">
+      <span class="period">26+</span>
+      <span class="desc">Episodio con Camila: estando ebria, le dijo a Lu que se fuera</span>
+    </div>
+    <div class="alcohol-item">
+      <span class="period">26+</span>
+      <span class="desc">Las decisiones mas daninas en relaciones ocurrieron bajo efecto del alcohol</span>
+    </div>
+    <div class="alcohol-item">
+      <span class="period">Hoy</span>
+      <span class="desc">Pendiente de explorar en terapia: relacion actual con el alcohol</span>
+    </div>
+  </div>
+</div>
+
+<!-- PATTERNS -->
+<div class="patterns">
+  <h2>Temas y Patrones Recurrentes</h2>
+  <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-bottom:40px;">Para analisis en sesion terapeutica</p>
+
+  <div class="pattern-card neg">
+    <h3>1. Evasion como mecanismo</h3>
+    <p>Aprendida del papa. Se manifesto en consumo, silencio ante conflictos, paralizarte, mente en blanco, promiscuidad como forma de no vincularte. Presente desde los 8 hasta los ~26 anos.</p>
+  </div>
+
+  <div class="pattern-card neg">
+    <h3>2. Responsabilidad emocional temprana</h3>
+    <p>A los 8 anos te sentiste responsable de la salud mental de tu mama. Este patron de cargar con las emociones de otros aparece en varias etapas de tu vida.</p>
+  </div>
+
+  <div class="pattern-card neg">
+    <h3>3. Aceptacion vinculada al rendimiento</h3>
+    <p>De nina, la aceptacion venia de ser la mejor estudiante. Tus papas condicionaron la universidad a "merecerlo". Este patron conecta logro con valor personal.</p>
+  </div>
+
+  <div class="pattern-card mix">
+    <h3>4. Alcohol como desinhibidor destructivo</h3>
+    <p>Los momentos de mayor culpa (episodio Camila, decisiones daninas) ocurrieron bajo efecto del alcohol. Patron recurrente que vincula sustancia con perdida de control afectivo.</p>
+  </div>
+
+  <div class="pattern-card neg">
+    <h3>5. Silencio y paralisis ante el conflicto</h3>
+    <p>Desde nina: callar, mente en blanco, no decir nada mientras todo pasaba alrededor. Aparece en la rehabilitacion, en las discusiones familiares, en las relaciones.</p>
+  </div>
+
+  <div class="pattern-card neg">
+    <h3>6. Dificultad para vincularse afectivamente</h3>
+    <p>Promiscuidad, irresponsabilidad afectiva, no saber comunicar en relaciones romanticas. Ultimo patron en sanar — el area que mas se resistio al cambio.</p>
+  </div>
+
+  <div class="pattern-card pos">
+    <h3>7. Resiliencia y capacidad de transformacion</h3>
+    <p>Patron POSITIVO: en cada crisis encontraste la manera de reconstruirte. Promesa a tu abuela, decision de dejar drogas, pandemia como renacer, buscar a Lu con firmeza. Tu capacidad de transformarte es extraordinaria.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>Este documento es un ejercicio terapeutico. Los patrones identificados son observaciones preliminares para facilitar el analisis en sesion. No constituyen un diagnostico.</p>
+  <p style="margin-top:8px;">Generado en marzo 2026 para sesion con Ivan.</p>
+</div>
+
+<script>
+  // Scroll animation for events
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.event').forEach(el => observer.observe(el));
+
+  // Filter functionality
+  function filterEvents(type) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.event').forEach(el => {
+      if (type === 'all' || el.dataset.type === type) {
+        el.classList.remove('filtered-out');
+      } else {
+        el.classList.add('filtered-out');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
